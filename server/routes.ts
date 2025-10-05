@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { analyzeTriage, chatWithAI } from "./gemini";
+import { hashPassword, comparePassword, requireAuth, requireAdmin } from "./auth";
 import { insertUserSchema, insertHealthLogSchema, insertAlertSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -48,12 +49,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "User already exists" });
       }
 
+      const hashedPassword = await hashPassword(data.password);
       const user = await storage.createUser({
         email: data.email,
-        password: data.password,
+        password: hashedPassword,
         name: data.name,
         role: "patient",
       });
+
+      req.session.userId = user.id;
+      req.session.userRole = user.role;
 
       const { password, ...userWithoutPassword } = user;
       res.json({ user: userWithoutPassword });
@@ -68,9 +73,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = loginSchema.parse(req.body);
       
       const user = await storage.getUserByEmail(data.email);
-      if (!user || user.password !== data.password) {
+      if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
+
+      const validPassword = await comparePassword(data.password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      req.session.userId = user.id;
+      req.session.userRole = user.role;
 
       const { password, ...userWithoutPassword } = user;
       res.json({ user: userWithoutPassword });
@@ -80,14 +93,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/triage", async (req, res) => {
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Logout failed" });
+      }
+      res.json({ success: true });
+    });
+  });
+
+  app.post("/api/triage", requireAuth, async (req, res) => {
     try {
-      const data = triageSchema.parse(req.body);
+      const data = z.object({ symptoms: z.string().min(1) }).parse(req.body);
+      const userId = req.session.userId!;
       
       const triageResult = await analyzeTriage(data.symptoms);
       
       await storage.createAIChatLog({
-        userId: data.userId,
+        userId,
         prompt: data.symptoms,
         response: triageResult,
       });
@@ -99,9 +122,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/chat", async (req, res) => {
+  app.post("/api/chat", requireAuth, async (req, res) => {
     try {
-      const data = chatSchema.parse(req.body);
+      const data = z.object({ message: z.string().min(1) }).parse(req.body);
       
       const response = await chatWithAI(data.message);
       
@@ -112,12 +135,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/alerts", async (req, res) => {
+  app.post("/api/alerts", requireAuth, async (req, res) => {
     try {
-      const data = alertSchema.parse(req.body);
+      const data = z.object({
+        location: z.object({ lat: z.number(), lng: z.number() }),
+        urgency: z.number().min(1).max(10),
+        description: z.string().optional(),
+      }).parse(req.body);
       
       const alert = await storage.createAlert({
-        userId: data.userId,
+        userId: req.session.userId!,
         location: data.location,
         urgency: data.urgency,
         description: data.description,
@@ -131,13 +158,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/alerts", async (req, res) => {
+  app.get("/api/alerts", requireAuth, async (req, res) => {
     try {
-      const userId = req.query.userId as string | undefined;
+      const userRole = req.session.userRole;
+      const userId = req.session.userId!;
       
-      const alerts = userId 
-        ? await storage.getAlertsByUser(userId)
-        : await storage.getAlerts();
+      const alerts = userRole === "admin"
+        ? await storage.getAlerts()
+        : await storage.getAlertsByUser(userId);
       
       res.json(alerts);
     } catch (error) {
@@ -146,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/alerts/:id", async (req, res) => {
+  app.patch("/api/alerts/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const data = updateAlertSchema.parse(req.body);
@@ -164,10 +192,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/health-logs", async (req, res) => {
+  app.post("/api/health-logs", requireAuth, async (req, res) => {
     try {
-      const data = insertHealthLogSchema.parse(req.body);
-      const log = await storage.createHealthLog(data);
+      const data = insertHealthLogSchema.omit({ userId: true }).parse(req.body);
+      const log = await storage.createHealthLog({
+        ...data,
+        userId: req.session.userId!,
+      });
       res.json(log);
     } catch (error) {
       console.error("Health log error:", error);
@@ -175,9 +206,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/health-logs/:userId", async (req, res) => {
+  app.get("/api/health-logs/:userId", requireAuth, async (req, res) => {
     try {
       const { userId } = req.params;
+      
+      if (userId !== req.session.userId && req.session.userRole !== "admin") {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
       const logs = await storage.getHealthLogsByUser(userId);
       res.json(logs);
     } catch (error) {
@@ -186,9 +222,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/chat-history/:userId", async (req, res) => {
+  app.get("/api/chat-history/:userId", requireAuth, async (req, res) => {
     try {
       const { userId } = req.params;
+      
+      if (userId !== req.session.userId && req.session.userRole !== "admin") {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
       const history = await storage.getAIChatLogsByUser(userId);
       res.json(history);
     } catch (error) {

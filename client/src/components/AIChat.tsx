@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useUser } from "@/contexts/UserContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Send, User } from "lucide-react";
+import { Brain, Send, User, Loader2 } from "lucide-react";
+import type { TriageResponse } from "@shared/schema";
 
 interface Message {
   id: string;
@@ -12,6 +16,8 @@ interface Message {
   content: string;
   timestamp: Date;
   urgencyScore?: number;
+  medicalFlags?: string[];
+  firstAid?: string[];
 }
 
 interface AIChatProps {
@@ -20,13 +26,48 @@ interface AIChatProps {
 }
 
 export default function AIChat({ messages: initialMessages, onSendMessage }: AIChatProps) {
-  const [messages, setMessages] = useState<Message[]>(
-    initialMessages || []
-  );
+  const [messages, setMessages] = useState<Message[]>(initialMessages || []);
   const [input, setInput] = useState("");
+  const { user } = useUser();
+
+  const triageMutation = useMutation({
+    mutationFn: async (symptoms: string) => {
+      return await apiRequest<TriageResponse>("/api/triage", {
+        method: "POST",
+        body: JSON.stringify({ symptoms }),
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+    onSuccess: (data, symptoms) => {
+      const firstAidText = data.first_aid?.join("\n• ") || "No specific first aid recommended";
+      const flagsText = data.medical_flags?.length > 0
+        ? `\n\n⚠️ Medical Flags: ${data.medical_flags.join(", ")}`
+        : "";
+
+      const aiResponse: Message = {
+        id: Date.now().toString(),
+        role: "ai",
+        content: `${data.summary_for_rescue_en}\n\nFirst Aid:\n• ${firstAidText}${flagsText}`,
+        timestamp: new Date(),
+        urgencyScore: data.urgency_score,
+        medicalFlags: data.medical_flags,
+        firstAid: data.first_aid,
+      };
+      setMessages((prev) => [...prev, aiResponse]);
+    },
+    onError: () => {
+      const errorResponse: Message = {
+        id: Date.now().toString(),
+        role: "ai",
+        content: "I apologize, but I'm having trouble analyzing your symptoms right now. If this is an emergency, please call your local emergency number immediately (999).",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorResponse]);
+    },
+  });
 
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !user) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -36,20 +77,11 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
     };
 
     setMessages([...messages, userMessage]);
-    console.log("Message sent:", input);
     onSendMessage?.(input);
+    const symptoms = input;
     setInput("");
-
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "ai",
-        content: "I'm analyzing your symptoms. Based on the information provided, I recommend monitoring your condition. If symptoms worsen, please seek immediate medical attention.",
-        timestamp: new Date(),
-        urgencyScore: 3,
-      };
-      setMessages((prev) => [...prev, aiResponse]);
-    }, 1500);
+    
+    triageMutation.mutate(symptoms);
   };
 
   return (
@@ -129,8 +161,18 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
               className="min-h-[80px] resize-none"
               data-testid="input-chat-message"
             />
-            <Button onClick={handleSend} size="icon" className="h-[80px]" data-testid="button-send-message">
-              <Send className="h-4 w-4" />
+            <Button
+              onClick={handleSend}
+              size="icon"
+              className="h-[80px]"
+              disabled={triageMutation.isPending}
+              data-testid="button-send-message"
+            >
+              {triageMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>

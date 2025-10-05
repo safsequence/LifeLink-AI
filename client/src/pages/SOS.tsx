@@ -1,5 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useUser } from "@/contexts/UserContext";
+import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import SOSButton from "@/components/SOSButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,25 +11,51 @@ import { Phone, MapPin, Activity } from "lucide-react";
 
 export default function SOS() {
   const [, setLocation] = useLocation();
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const { user, logout } = useUser();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
+    if (!user) {
       setLocation("/login");
     }
-  }, [setLocation]);
+  }, [user, setLocation]);
+
+  const sosMutation = useMutation({
+    mutationFn: async (location: { lat: number; lng: number }) => {
+      return await apiRequest("/api/alerts", {
+        method: "POST",
+        body: JSON.stringify({
+          location,
+          urgency: 10,
+          description: "Emergency SOS activated",
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "SOS Alert Sent",
+        description: "Emergency services have been notified of your location",
+        variant: "default",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/alerts"] });
+    },
+    onError: () => {
+      toast({
+        title: "SOS Failed",
+        description: "Could not send alert. Please call emergency services directly.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     setLocation("/");
   };
 
   const handleSOSActivate = (location: { lat: number; lng: number }) => {
-    console.log("SOS activated at:", location);
+    sosMutation.mutate(location);
   };
 
   if (!user) return null;

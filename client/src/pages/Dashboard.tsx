@@ -1,31 +1,38 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@/contexts/UserContext";
 import Navbar from "@/components/Navbar";
 import HealthMetricCard from "@/components/HealthMetricCard";
 import AIChat from "@/components/AIChat";
 import { Heart, Activity, Thermometer, Droplets } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { HealthLog } from "@shared/schema";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const { user, logout } = useUser();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
+    if (!user) {
       setLocation("/login");
     }
-  }, [setLocation]);
+  }, [user, setLocation]);
+
+  const { data: healthLogs, isLoading } = useQuery<HealthLog[]>({
+    queryKey: ["/api/health-logs", user?.id],
+    enabled: !!user,
+  });
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     setLocation("/");
   };
 
   if (!user) return null;
+
+  const latestLog = healthLogs?.[0];
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,38 +49,53 @@ export default function Dashboard() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Your Vitals</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <HealthMetricCard
-                  title="Heart Rate"
-                  value="72"
-                  unit="bpm"
-                  icon={Heart}
-                  status="normal"
-                  trend="↑ 2% from yesterday"
-                />
-                <HealthMetricCard
-                  title="Blood Pressure"
-                  value="120/80"
-                  unit="mmHg"
-                  icon={Activity}
-                  status="normal"
-                  trend="Normal range"
-                />
-                <HealthMetricCard
-                  title="Temperature"
-                  value="98.6"
-                  unit="°F"
-                  icon={Thermometer}
-                  status="normal"
-                  trend="Normal range"
-                />
-                <HealthMetricCard
-                  title="Oxygen Level"
-                  value="98"
-                  unit="%"
-                  icon={Droplets}
-                  status="normal"
-                  trend="Excellent"
-                />
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-32" />
+                    <Skeleton className="h-32" />
+                    <Skeleton className="h-32" />
+                    <Skeleton className="h-32" />
+                  </>
+                ) : (
+                  <>
+                    <HealthMetricCard
+                      title="Heart Rate"
+                      value={latestLog?.heartRate?.toString() || "--"}
+                      unit="bpm"
+                      icon={Heart}
+                      status="normal"
+                      trend={latestLog ? "Latest reading" : "No data"}
+                    />
+                    <HealthMetricCard
+                      title="Blood Pressure"
+                      value={
+                        latestLog?.bloodPressureSystolic && latestLog?.bloodPressureDiastolic
+                          ? `${latestLog.bloodPressureSystolic}/${latestLog.bloodPressureDiastolic}`
+                          : "--"
+                      }
+                      unit="mmHg"
+                      icon={Activity}
+                      status="normal"
+                      trend={latestLog ? "Latest reading" : "No data"}
+                    />
+                    <HealthMetricCard
+                      title="Temperature"
+                      value={latestLog?.temperature?.toString() || "--"}
+                      unit="°F"
+                      icon={Thermometer}
+                      status="normal"
+                      trend={latestLog ? "Latest reading" : "No data"}
+                    />
+                    <HealthMetricCard
+                      title="Oxygen Level"
+                      value={latestLog?.oxygenLevel?.toString() || "--"}
+                      unit="%"
+                      icon={Droplets}
+                      status="normal"
+                      trend={latestLog ? "Latest reading" : "No data"}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -84,20 +106,26 @@ export default function Dashboard() {
                   <CardTitle>Health Log</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between items-center pb-2 border-b">
-                      <span className="text-muted-foreground">Today, 9:00 AM</span>
-                      <span>Morning vitals recorded</span>
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      <Skeleton className="h-8" />
+                      <Skeleton className="h-8" />
+                      <Skeleton className="h-8" />
                     </div>
-                    <div className="flex justify-between items-center pb-2 border-b">
-                      <span className="text-muted-foreground">Yesterday, 8:30 PM</span>
-                      <span>AI consultation completed</span>
+                  ) : healthLogs && healthLogs.length > 0 ? (
+                    <div className="space-y-3 text-sm">
+                      {healthLogs.slice(0, 3).map((log) => (
+                        <div key={log.id} className="flex justify-between items-center pb-2 border-b last:border-0">
+                          <span className="text-muted-foreground">
+                            {new Date(log.timestamp).toLocaleString()}
+                          </span>
+                          <span>{log.symptoms || "Vitals recorded"}</span>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Yesterday, 2:15 PM</span>
-                      <span>Medication reminder sent</span>
-                    </div>
-                  </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No health logs yet</p>
+                  )}
                 </CardContent>
               </Card>
             </div>

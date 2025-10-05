@@ -1,91 +1,77 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useUser } from "@/contexts/UserContext";
+import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import AlertMap from "@/components/AlertMap";
 import AlertList from "@/components/AlertList";
+import type { Alert } from "@shared/schema";
 
-interface Alert {
-  id: string;
-  location: { lat: number; lng: number };
-  status: "active" | "pending" | "resolved";
+interface AlertWithUser extends Alert {
   user: string;
-  urgency: number;
-  timestamp: Date;
-  description?: string;
 }
 
 export default function Admin() {
   const [, setLocation] = useLocation();
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
-  const [alerts, setAlerts] = useState<Alert[]>([
-    {
-      id: "1",
-      location: { lat: 23.8103, lng: 90.4125 },
-      status: "active",
-      user: "John Doe",
-      urgency: 9,
-      timestamp: new Date(),
-      description: "Severe chest pain, difficulty breathing",
-    },
-    {
-      id: "2",
-      location: { lat: 23.7805, lng: 90.4200 },
-      status: "pending",
-      user: "Jane Smith",
-      urgency: 6,
-      timestamp: new Date(Date.now() - 300000),
-      description: "High fever and persistent headache",
-    },
-    {
-      id: "3",
-      location: { lat: 23.8200, lng: 90.3950 },
-      status: "active",
-      user: "Bob Johnson",
-      urgency: 7,
-      timestamp: new Date(Date.now() - 180000),
-      description: "Severe bleeding from leg injury",
-    },
-  ]);
+  const { user, logout } = useUser();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      if (userData.role !== "admin") {
-        setLocation("/dashboard");
-        return;
-      }
-      setUser(userData);
-    } else {
+    if (!user) {
       setLocation("/login");
+    } else if (user.role !== "admin") {
+      setLocation("/dashboard");
     }
-  }, [setLocation]);
+  }, [user, setLocation]);
+
+  const { data: alerts = [], isLoading } = useQuery<Alert[]>({
+    queryKey: ["/api/alerts"],
+    enabled: !!user && user.role === "admin",
+    refetchInterval: 5000,
+  });
+
+  const updateAlertMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      return await apiRequest(`/api/alerts/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/alerts"] });
+    },
+  });
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     setLocation("/");
   };
 
   const handleAccept = (alertId: string) => {
-    setAlerts((prev) =>
-      prev.map((alert) =>
-        alert.id === alertId ? { ...alert, status: "active" as Alert["status"] } : alert
-      )
-    );
-    console.log("Alert accepted:", alertId);
+    updateAlertMutation.mutate({ id: alertId, status: "active" });
+    toast({
+      title: "Alert accepted",
+      description: "Emergency response activated",
+    });
   };
 
   const handleResolve = (alertId: string) => {
-    setAlerts((prev) =>
-      prev.map((alert) =>
-        alert.id === alertId ? { ...alert, status: "resolved" as Alert["status"] } : alert
-      )
-    );
-    console.log("Alert resolved:", alertId);
+    updateAlertMutation.mutate({ id: alertId, status: "resolved" });
+    toast({
+      title: "Alert resolved",
+      description: "Emergency has been resolved",
+    });
   };
 
-  if (!user) return null;
+  if (!user || user.role !== "admin") return null;
+
+  const alertsWithUser: AlertWithUser[] = alerts.map((alert) => ({
+    ...alert,
+    user: alert.userId,
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,14 +86,14 @@ export default function Admin() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-220px)]">
           <div className="lg:col-span-2 h-full">
             <AlertMap
-              alerts={alerts}
+              alerts={alertsWithUser}
               onAlertClick={(alert) => console.log("Alert clicked:", alert)}
             />
           </div>
 
           <div className="lg:col-span-1 h-full">
             <AlertList
-              alerts={alerts}
+              alerts={alertsWithUser}
               onAlertClick={(alert) => console.log("Alert clicked:", alert)}
               onAccept={handleAccept}
               onResolve={handleResolve}
