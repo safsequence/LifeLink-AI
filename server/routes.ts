@@ -15,26 +15,6 @@ const signupSchema = loginSchema.extend({
   name: z.string().min(1),
 });
 
-const triageSchema = z.object({
-  symptoms: z.string().min(1),
-  userId: z.string(),
-});
-
-const chatSchema = z.object({
-  message: z.string().min(1),
-  userId: z.string(),
-});
-
-const alertSchema = z.object({
-  userId: z.string(),
-  location: z.object({
-    lat: z.number(),
-    lng: z.number(),
-  }),
-  urgency: z.number().min(1).max(10),
-  description: z.string().optional(),
-});
-
 const updateAlertSchema = z.object({
   status: z.enum(["pending", "active", "resolved"]),
 });
@@ -117,6 +97,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(triageResult);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Triage error:", error);
       res.status(500).json({ error: "Triage analysis failed" });
     }
@@ -130,6 +113,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ message: response });
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Chat error:", error);
       res.status(500).json({ error: "Chat failed" });
     }
@@ -153,8 +139,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(alert);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Alert creation error:", error);
-      res.status(400).json({ error: "Invalid request" });
+      res.status(500).json({ error: "Failed to create alert" });
     }
   });
 
@@ -201,8 +190,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.json(log);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Health log error:", error);
-      res.status(400).json({ error: "Invalid request" });
+      res.status(500).json({ error: "Failed to create health log" });
     }
   });
 

@@ -7,14 +7,19 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("SESSION_SECRET must be set in production");
+}
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "lifelink-ai-development-secret-key",
+    secret: process.env.SESSION_SECRET || "lifelink-ai-development-secret-key-change-in-production",
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
+      sameSite: "strict",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
