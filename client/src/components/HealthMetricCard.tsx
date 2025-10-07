@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface HealthMetricCardProps {
   title: string;
@@ -19,41 +19,57 @@ export default function HealthMetricCard({
   status,
   trend,
 }: HealthMetricCardProps) {
-  const statusColors = {
-    normal: "bg-chart-5 text-white",
-    warning: "bg-chart-4 text-white",
-    critical: "bg-chart-3 text-white",
+  const statusConfig = {
+    normal: {
+      border: "border-green-500/30",
+      bg: "bg-gradient-to-br from-green-500/5 to-green-500/10",
+      icon: "bg-green-500/20 text-green-400",
+      glow: "shadow-green-500/20"
+    },
+    warning: {
+      border: "border-amber-500/30",
+      bg: "bg-gradient-to-br from-amber-500/5 to-amber-500/10",
+      icon: "bg-amber-500/20 text-amber-400",
+      glow: "shadow-amber-500/20"
+    },
+    critical: {
+      border: "border-red-500/30",
+      bg: "bg-gradient-to-br from-red-500/5 to-red-500/10",
+      icon: "bg-red-500/20 text-red-400",
+      glow: "shadow-red-500/20"
+    },
   };
 
-  const borderColors = {
-    normal: "border-chart-5",
-    warning: "border-chart-4",
-    critical: "border-chart-3",
-  };
+  const config = statusConfig[status];
 
   return (
-    <Card className={`border-l-4 ${borderColors[status]} hover-elevate`} data-testid={`card-metric-${title.toLowerCase().replace(/\s+/g, '-')}`}>
-      <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <div className="text-4xl font-bold" data-testid={`text-metric-value-${title.toLowerCase().replace(/\s+/g, '-')}`}>
-              {value}
+    <Card className={cn(
+      "border backdrop-blur-sm transition-all hover:scale-[1.02]",
+      config.border,
+      config.bg,
+      config.glow,
+      "bg-gray-900/50 shadow-lg"
+    )}>
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className={cn("p-3 rounded-xl", config.icon)}>
+              <Icon className="h-5 w-5" />
             </div>
-            <div className="text-sm text-muted-foreground">{unit}</div>
+            <h3 className="font-semibold text-white">{title}</h3>
           </div>
-          <Badge className={statusColors[status]} data-testid={`badge-status-${status}`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </Badge>
         </div>
-        {trend && (
-          <div className="mt-3 text-xs text-muted-foreground" data-testid="text-trend">
-            {trend}
+        <div className="space-y-2">
+          <div className="flex items-baseline gap-2">
+            <span className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              {value}
+            </span>
+            <span className="text-gray-400 text-lg">{unit}</span>
           </div>
-        )}
+          {trend && (
+            <p className="text-sm text-gray-500">{trend}</p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

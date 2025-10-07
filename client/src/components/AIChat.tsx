@@ -9,6 +9,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Send, User, Loader2 } from "lucide-react";
 import type { TriageResponse } from "@shared/schema";
+import { cn } from "@/lib/utils";
+import { Bot, MessageSquare } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface Message {
   id: string;
@@ -29,6 +32,8 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
   const [messages, setMessages] = useState<Message[]>(initialMessages || []);
   const [input, setInput] = useState("");
   const { user } = useUser();
+  const isLoading = false; // Placeholder for actual loading state
+  const messagesEndRef = null; // Placeholder for actual ref
 
   const triageMutation = useMutation({
     mutationFn: async (symptoms: string) => {
@@ -80,91 +85,93 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
     onSendMessage?.(input);
     const symptoms = input;
     setInput("");
-    
+
     triageMutation.mutate(symptoms);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSend();
+  };
+
+
   return (
-    <Card className="flex flex-col h-[600px]">
-      <CardHeader className="border-b">
-        <CardTitle className="flex items-center gap-2">
-          <Brain className="h-5 w-5 text-primary" />
-          AI Doctor Chat
+    <Card className="h-[600px] flex flex-col bg-gray-900/50 border-gray-800 backdrop-blur-sm shadow-xl">
+      <CardHeader className="border-b border-gray-800">
+        <CardTitle className="flex items-center gap-2 text-white">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+            <MessageSquare className="h-5 w-5 text-white" />
+          </div>
+          Chat with AI Doctor
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-0">
         <ScrollArea className="flex-1 p-4">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8">
-              <Brain className="h-16 w-16 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Describe your symptoms to get instant AI-powered medical guidance
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-3 ${message.role === "user" ? "justify-end" : ""}`}
-                  data-testid={`message-${message.role}-${message.id}`}
-                >
-                  {message.role === "ai" && (
-                    <div className="flex-shrink-0">
-                      <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-                        <Brain className="h-4 w-4 text-primary-foreground" />
-                      </div>
-                    </div>
-                  )}
-                  <div className={`max-w-[80%] ${message.role === "user" ? "order-1" : ""}`}>
-                    <Card className={message.role === "user" ? "bg-primary text-primary-foreground" : ""}>
-                      <CardContent className="p-3">
-                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                        {message.urgencyScore !== undefined && (
-                          <div className="mt-2">
-                            <Badge variant="outline" className="text-xs">
-                              Urgency: {message.urgencyScore}/10
-                            </Badge>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                    <p className="text-xs text-muted-foreground mt-1 px-1">
-                      {message.timestamp.toLocaleTimeString()}
-                    </p>
+          <div className="space-y-4">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  "flex gap-3",
+                  msg.role === "user" ? "justify-end" : "justify-start"
+                )}
+              >
+                {msg.role === "ai" && (
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center flex-shrink-0 border border-purple-500/30">
+                    <Brain className="h-5 w-5 text-purple-400" />
                   </div>
-                  {message.role === "user" && (
-                    <div className="flex-shrink-0 order-2">
-                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                        <User className="h-4 w-4" />
-                      </div>
+                )}
+                <div
+                  className={cn(
+                    "rounded-lg px-4 py-2 max-w-[80%]",
+                    msg.role === "user"
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+                      : "bg-gray-800 text-gray-100 border border-gray-700"
+                  )}
+                >
+                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  {msg.urgencyScore !== undefined && (
+                    <div className="mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        Urgency: {msg.urgencyScore}/10
+                      </Badge>
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
-          )}
+                {msg.role === "user" && (
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                )}
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex gap-3">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center flex-shrink-0 border border-purple-500/30">
+                  <Brain className="h-5 w-5 text-purple-400" />
+                </div>
+                <div className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-purple-400" />
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
         </ScrollArea>
 
-        <div className="border-t p-4">
-          <div className="flex gap-2">
-            <Textarea
-              placeholder="Describe your symptoms..."
+        <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              className="min-h-[80px] resize-none"
-              data-testid="input-chat-message"
+              placeholder="Describe your symptoms..."
+              disabled={triageMutation.isPending}
+              className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-purple-500"
             />
             <Button
               onClick={handleSend}
               size="icon"
-              className="h-[80px]"
+              className="h-[80px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
               disabled={triageMutation.isPending}
               data-testid="button-send-message"
             >
@@ -174,7 +181,7 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
                 <Send className="h-4 w-4" />
               )}
             </Button>
-          </div>
+          </form>
         </div>
       </CardContent>
     </Card>
