@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Activity, BookOpen, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function HeroSection() {
   return (
@@ -15,28 +16,50 @@ export default function HeroSection() {
 
       <div className="container relative z-10 px-4 py-32 text-center">
         <div className="mx-auto max-w-4xl space-y-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-1.5 text-sm text-purple-300 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-1.5 text-sm text-purple-300 backdrop-blur-sm"
+          >
             <Sparkles className="h-4 w-4" />
             <span>Powered by Google Gemini AI</span>
-          </div>
+          </motion.div>
 
-          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-white" data-testid="text-hero-title">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-white"
+            data-testid="text-hero-title"
+          >
             AI-Powered Healthcare
             <br />
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               At Your Fingertips
             </span>
-          </h1>
+          </motion.h1>
 
-          <p className="text-xl text-gray-300 sm:text-2xl max-w-3xl mx-auto leading-relaxed" data-testid="text-hero-subtitle">
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-xl text-gray-300 sm:text-2xl max-w-3xl mx-auto leading-relaxed"
+            data-testid="text-hero-subtitle"
+          >
             Gemini-powered AI doctor for instant triage • Offline-capable SOS network connecting to hospitals & emergency services • Real-time health monitoring & live routing to nearest responders
-          </p>
+          </motion.p>
 
-          <div className="flex flex-wrap justify-center gap-4 pt-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-wrap justify-center gap-4 pt-4"
+          >
             <Link href="/signup" data-testid="button-get-started">
               <Button
                 size="lg"
-                className="gap-2 text-lg h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 shadow-lg shadow-purple-500/50"
+                className="gap-2 text-lg h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 shadow-lg shadow-purple-500/50 transition-all hover:scale-105"
               >
                 <Activity className="h-5 w-5" />
                 Start Free Trial
@@ -46,15 +69,20 @@ export default function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="gap-2 text-lg h-14 px-8 bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm"
+                className="gap-2 text-lg h-14 px-8 bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm transition-all hover:scale-105"
               >
                 <BookOpen className="h-5 w-5" />
                 Documentation
               </Button>
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="pt-12 flex items-center justify-center gap-8 text-sm text-gray-400">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="pt-12 flex items-center justify-center gap-8 text-sm text-gray-400"
+          >
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
               <span>24/7 AI Doctor</span>
@@ -67,7 +95,7 @@ export default function HeroSection() {
               <div className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
               <span>Live Emergency Routing</span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

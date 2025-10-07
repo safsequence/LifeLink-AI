@@ -1,6 +1,20 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Activity, ArrowLeft, CheckCircle, Heart, Shield, Zap, Phone, MessageSquare, MapPin } from "lucide-react";
+import { Activity, ArrowLeft, Globe, Target, Network, TrendingUp, Users, MessageSquare, Phone, MapPin, Shield } from "lucide-react";
+import { motion } from "framer-motion";
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-50px" },
+  transition: { duration: 0.6 }
+};
+
+const staggerContainer = {
+  initial: {},
+  whileInView: { transition: { staggerChildren: 0.1 } },
+  viewport: { once: true, margin: "-50px" }
+};
 
 export default function Documentation() {
   return (
@@ -35,7 +49,12 @@ export default function Documentation() {
 
         <div className="container mx-auto px-4 py-16 max-w-6xl">
           <div className="space-y-16">
-            <div className="text-center space-y-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center space-y-4"
+            >
               <h1 className="text-5xl font-bold text-white">
                 LifeLink AI
                 <span className="block text-3xl mt-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -43,78 +62,94 @@ export default function Documentation() {
                 </span>
               </h1>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Your comprehensive guide to AI-powered healthcare at your fingertips
+                Your comprehensive guide to AI-powered emergency healthcare
               </p>
-            </div>
+            </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
-                  <Heart className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-white">What is LifeLink AI?</h2>
-                <p className="text-gray-400 leading-relaxed">
-                  LifeLink AI is an advanced healthcare platform that combines Google Gemini AI with real-time emergency services. 
-                  Get instant medical triage, connect with emergency responders, and monitor your health—all from one unified platform.
-                </p>
+            <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-4 hover:border-blue-500/30 transition-all duration-300">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 flex items-center justify-center">
+                <Globe className="h-6 w-6 text-white" />
               </div>
+              <h2 className="text-2xl font-bold text-white">Who We Are</h2>
+              <p className="text-gray-400 leading-relaxed">
+                LifeLink AI was created to solve one of the world's toughest challenges — staying connected when networks fail. During disasters or blackouts, our system transforms nearby devices into a mesh-based emergency network that relays SOS messages locally until one device reconnects to the cloud.
+              </p>
+            </motion.div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 flex items-center justify-center">
-                  <Zap className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-white">How It Works</h2>
-                <ul className="space-y-3 text-gray-400">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
-                    <span>Sign up and complete your health profile</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
-                    <span>Chat with AI doctor for instant medical guidance</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
-                    <span>Use SOS button to connect with emergency services</span>
-                  </li>
-                </ul>
+            <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-4 hover:border-purple-500/30 transition-all duration-300">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                <Target className="h-6 w-6 text-white" />
               </div>
-            </div>
+              <h2 className="text-2xl font-bold text-white">Our Vision</h2>
+              <p className="text-gray-400 leading-relaxed">
+                We believe no one should be left unheard in an emergency. LifeLink AI ensures that every phone becomes a lifeline — capable of sending SOS signals without internet access, using peer-to-peer communication and AI-powered clustering.
+              </p>
+            </motion.div>
+
+            <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-4 hover:border-emerald-500/30 transition-all duration-300">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 flex items-center justify-center">
+                <Network className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white">How It Works</h2>
+              <p className="text-gray-400 leading-relaxed">
+                Using simulated WebRTC + Bluetooth connectivity, LifeLink AI allows SOS messages to "hop" between browsers. When any one device goes online, it uploads all stored messages to a global Rescue Dashboard that visualizes incidents, clusters them by type, and triggers voice alerts such as "⚠️ New flood cluster detected in Savar."
+              </p>
+            </motion.div>
+
+            <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-4 hover:border-orange-500/30 transition-all duration-300">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-orange-600 to-red-600 flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white">Our Impact</h2>
+              <p className="text-gray-400 leading-relaxed">
+                By turning browsers into emergency tools, LifeLink AI makes rescue coordination faster and smarter. Our system combines AI analysis, real-time mapping, and community-driven connectivity to make sure help always finds a way — even without the internet.
+              </p>
+            </motion.div>
+
+            <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-4 hover:border-violet-500/30 transition-all duration-300">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center justify-center">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white">Our Team</h2>
+              <p className="text-gray-400 leading-relaxed">
+                We are a team of passionate innovators driven to make technology a force for humanity. Our mission is to create hope in moments of chaos — proving that the power to save lives can lie within every device and every person.
+              </p>
+            </motion.div>
 
             <div className="space-y-8">
-              <h2 className="text-3xl font-bold text-white text-center">Core Features</h2>
+              <motion.h2 {...fadeInUp} className="text-3xl font-bold text-white text-center">Core Features</motion.h2>
               
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-3">
+              <motion.div {...staggerContainer} className="grid md:grid-cols-3 gap-6">
+                <motion.div {...fadeInUp} className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-3 hover:border-purple-500/30 hover:scale-105 transition-all duration-300">
                   <MessageSquare className="h-8 w-8 text-purple-400" />
                   <h3 className="text-xl font-semibold text-white">AI Doctor Chat</h3>
                   <p className="text-gray-400 text-sm">
                     Powered by Google Gemini AI, get instant medical triage and health advice 24/7. 
                     Describe your symptoms and receive intelligent guidance.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-3">
+                <motion.div {...fadeInUp} className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-3 hover:border-red-500/30 hover:scale-105 transition-all duration-300">
                   <Phone className="h-8 w-8 text-red-400" />
                   <h3 className="text-xl font-semibold text-white">Emergency SOS</h3>
                   <p className="text-gray-400 text-sm">
                     Offline-capable SOS network that connects you directly to hospitals and emergency services. 
                     Works even without internet connection.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-3">
+                <motion.div {...fadeInUp} className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-3 hover:border-green-500/30 hover:scale-105 transition-all duration-300">
                   <MapPin className="h-8 w-8 text-green-400" />
                   <h3 className="text-xl font-semibold text-white">Live Routing</h3>
                   <p className="text-gray-400 text-sm">
                     Real-time health monitoring with live routing to nearest responders. 
                     Get connected to the closest available help instantly.
                   </p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-purple-900/20 to-pink-900/20 backdrop-blur-xl p-8 space-y-4">
+            <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-gradient-to-r from-purple-900/20 to-pink-900/20 backdrop-blur-xl p-8 space-y-4 hover:border-purple-500/30 transition-all duration-300">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
                 <Shield className="h-6 w-6 text-white" />
               </div>
@@ -123,44 +158,44 @@ export default function Documentation() {
                 Your health data is encrypted and secure. We follow HIPAA compliance standards and never share your 
                 personal information without explicit consent. All AI interactions are processed with privacy-first principles.
               </p>
-            </div>
+            </motion.div>
 
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-white text-center">Getting Started</h2>
-              <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
+              <motion.h2 {...fadeInUp} className="text-3xl font-bold text-white text-center">Getting Started</motion.h2>
+              <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-6">
+                <motion.div {...staggerContainer} className="space-y-4">
+                  <motion.div {...fadeInUp} className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0">1</div>
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-1">Create Your Account</h3>
                       <p className="text-gray-400">Sign up with your email and create a secure password</p>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-4">
+                  </motion.div>
+                  <motion.div {...fadeInUp} className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0">2</div>
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-1">Set Up Your Profile</h3>
                       <p className="text-gray-400">Add your health information and emergency contacts</p>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-4">
+                  </motion.div>
+                  <motion.div {...fadeInUp} className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0">3</div>
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-1">Start Using LifeLink</h3>
                       <p className="text-gray-400">Chat with AI doctor, monitor health, and access emergency services</p>
                     </div>
-                  </div>
-                </div>
-              </div>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
             </div>
 
-            <div className="text-center space-y-6">
+            <motion.div {...fadeInUp} className="text-center space-y-6">
               <h2 className="text-3xl font-bold text-white">Ready to Get Started?</h2>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/signup">
                   <Button
                     size="lg"
-                    className="gap-2 text-lg h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 shadow-lg shadow-purple-500/50"
+                    className="gap-2 text-lg h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 shadow-lg shadow-purple-500/50 transition-all hover:scale-105"
                   >
                     <Activity className="h-5 w-5" />
                     Start Free Trial
@@ -170,13 +205,13 @@ export default function Documentation() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="gap-2 text-lg h-14 px-8 bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm"
+                    className="gap-2 text-lg h-14 px-8 bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm transition-all hover:scale-105"
                   >
                     Sign In
                   </Button>
                 </Link>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
