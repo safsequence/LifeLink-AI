@@ -1,70 +1,71 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Activity, Brain, MapPin, Heart } from "lucide-react";
+import { Activity, BookOpen, Sparkles } from "lucide-react";
 
 export default function HeroSection() {
   return (
-    <div className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background: "linear-gradient(135deg, hsl(266, 100%, 50%) 0%, hsl(280, 61%, 65%) 100%)",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60" />
+    <div className="relative min-h-[700px] flex items-center justify-center overflow-hidden bg-black">
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-black to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
+        <div className="absolute inset-0 bg-grid-white/[0.02]" style={{
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
+        }} />
       </div>
 
-      <div className="container relative z-10 px-4 py-24 text-center text-white">
-        <div className="mx-auto max-w-3xl space-y-8">
-          <div className="flex justify-center">
-            <Activity className="h-20 w-20 text-white/90" />
+      <div className="container relative z-10 px-4 py-32 text-center">
+        <div className="mx-auto max-w-4xl space-y-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-1.5 text-sm text-purple-300 backdrop-blur-sm">
+            <Sparkles className="h-4 w-4" />
+            <span>Powered by Google Gemini AI</span>
           </div>
 
-          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl" data-testid="text-hero-title">
-            Save Lives with AI-Powered Emergency Care
+          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-white" data-testid="text-hero-title">
+            AI-Powered Healthcare
+            <br />
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              At Your Fingertips
+            </span>
           </h1>
 
-          <p className="text-xl text-white/90 sm:text-2xl" data-testid="text-hero-subtitle">
-            Real-time triage, instant SOS alerts, and intelligent health monitoring.
-            Get medical guidance when every second counts.
+          <p className="text-xl text-gray-300 sm:text-2xl max-w-3xl mx-auto leading-relaxed" data-testid="text-hero-subtitle">
+            Gemini-powered AI doctor for instant triage • Offline-capable SOS network connecting to hospitals & emergency services • Real-time health monitoring & live routing to nearest responders
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4 pt-4">
             <Link href="/signup" data-testid="button-get-started">
               <Button
                 size="lg"
-                className="gap-2 text-lg h-14 px-8 bg-white text-primary hover:bg-white/90 border border-white/20"
+                className="gap-2 text-lg h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 shadow-lg shadow-purple-500/50"
               >
-                <Heart className="h-5 w-5" />
-                Get Started Free
+                <Activity className="h-5 w-5" />
+                Start Free Trial
               </Button>
             </Link>
             <Link href="/login" data-testid="button-sign-in">
               <Button
                 size="lg"
                 variant="outline"
-                className="gap-2 text-lg h-14 px-8 bg-white/10 text-white border-white/30 hover:bg-white/20 backdrop-blur-sm"
+                className="gap-2 text-lg h-14 px-8 bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm"
               >
-                Sign In
+                <BookOpen className="h-5 w-5" />
+                Documentation
               </Button>
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 pt-8 sm:grid-cols-3">
-            <div className="rounded-lg bg-white/10 p-6 backdrop-blur-sm border border-white/20">
-              <Brain className="mx-auto h-10 w-10 text-white mb-3" />
-              <h3 className="font-semibold text-lg mb-2">AI Doctor</h3>
-              <p className="text-sm text-white/80">Instant symptom analysis and medical guidance</p>
+          <div className="pt-12 flex items-center justify-center gap-8 text-sm text-gray-400">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              <span>24/7 AI Doctor</span>
             </div>
-            <div className="rounded-lg bg-white/10 p-6 backdrop-blur-sm border border-white/20">
-              <MapPin className="mx-auto h-10 w-10 text-white mb-3" />
-              <h3 className="font-semibold text-lg mb-2">GPS SOS</h3>
-              <p className="text-sm text-white/80">One-tap emergency alerts with location</p>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+              <span>Offline SOS</span>
             </div>
-            <div className="rounded-lg bg-white/10 p-6 backdrop-blur-sm border border-white/20">
-              <Activity className="mx-auto h-10 w-10 text-white mb-3" />
-              <h3 className="font-semibold text-lg mb-2">Health Monitoring</h3>
-              <p className="text-sm text-white/80">Track vitals and get AI predictions</p>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
+              <span>Live Emergency Routing</span>
             </div>
           </div>
         </div>

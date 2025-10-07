@@ -238,7 +238,11 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-black text-foreground;
+  }
+
+  html {
+    @apply bg-black;
   }
 }
 

@@ -14,13 +14,13 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
   const [location] = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur-xl supports-[backdrop-filter]:bg-black/40">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-2 hover-elevate px-3 py-2 rounded-md cursor-pointer">
               <Activity className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">LifeLink AI</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">LifeLink AI</span>
             </div>
           </Link>
 
