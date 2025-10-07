@@ -30,11 +30,27 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    minify: "esbuild",
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'wouter'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast'],
+        },
+      },
+    },
   },
   server: {
+    host: "0.0.0.0",
+    port: 5000,
+    strictPort: true,
     fs: {
       strict: true,
       deny: ["**/.*"],
+    },
+    hmr: {
+      clientPort: 443,
     },
   },
 });
