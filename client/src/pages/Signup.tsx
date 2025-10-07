@@ -28,14 +28,23 @@ export default function Signup() {
       email: data.email,
       password: data.password,
       name: data.name || "User",
-      role: "user",
-      createdAt: new Date().toISOString()
+      role: "patient",
+      location: null,
+      createdAt: new Date()
     };
     
     users.push(newUser);
     localStorage.setItem('lifelink_users', JSON.stringify(users));
     
-    const userWithoutPassword = { ...newUser, password: undefined };
+    const userWithoutPassword = { 
+      id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      role: newUser.role,
+      location: newUser.location,
+      createdAt: newUser.createdAt,
+      password: "" as any
+    };
     setUser(userWithoutPassword);
     localStorage.setItem('lifelink_current_user', JSON.stringify(userWithoutPassword));
     

@@ -10,6 +10,15 @@ LifeLink AI is an AI-powered emergency healthcare platform that provides real-ti
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**October 7, 2025**
+- Redesigned login and signup pages to match homepage dark theme with purple/pink gradients
+- Created comprehensive documentation page at `/documentation` route
+- Implemented temporary JSON-based authentication using localStorage (for development/testing)
+- Updated hero section Documentation button to link to new documentation page
+- All auth pages now feature consistent glassmorphic design with backdrop blur effects
+
 ## System Architecture
 
 ### Frontend Architecture
@@ -51,8 +60,11 @@ Preferred communication style: Simple, everyday language.
 - Query endpoints for data retrieval (GET)
 
 **Authentication & Authorization**
-- bcrypt.js for password hashing
-- Session-based authentication with HTTP-only cookies
+- **Current Implementation**: Temporary localStorage-based JSON authentication for development
+  - User accounts stored in `lifelink_users` localStorage key
+  - Current session stored in `lifelink_current_user` localStorage key
+  - Plain text password storage (development only - NOT for production)
+- **Production Ready**: bcrypt.js for password hashing, session-based authentication with HTTP-only cookies
 - Role-based access control (patient vs admin roles)
 - Secure session configuration with environment-based settings
 
