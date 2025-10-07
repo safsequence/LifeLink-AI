@@ -6,28 +6,24 @@ export default function StatsSection() {
       icon: Users, 
       label: "Lives Saved", 
       value: "10,000+", 
-      gradient: "from-green-500 to-emerald-500",
       description: "Through AI triage and rapid response"
     },
     { 
       icon: Clock, 
       label: "Avg Response Time", 
       value: "< 3 min", 
-      gradient: "from-blue-500 to-cyan-500",
       description: "From alert to emergency dispatch"
     },
     { 
       icon: MapPin, 
       label: "Active Hospitals", 
       value: "500+", 
-      gradient: "from-purple-500 to-pink-500",
       description: "Connected to our network"
     },
     { 
       icon: TrendingUp, 
       label: "AI Accuracy", 
       value: "98.5%", 
-      gradient: "from-orange-500 to-red-500",
       description: "Medical triage precision"
     },
   ];
@@ -51,13 +47,13 @@ export default function StatsSection() {
               className="relative group"
               data-testid={`card-stat-${stat.label.toLowerCase().replace(/\s+/g, '-')}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-r ${stat.gradient} rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative p-8 rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 hover:border-gray-700 transition-all duration-300">
-                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${stat.gradient} mb-4`}>
-                  <stat.icon className="h-6 w-6 text-white" />
+                <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 mb-4">
+                  <stat.icon className="h-6 w-6 text-purple-400" />
                 </div>
                 <div 
-                  className="text-5xl font-bold mb-2 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent" 
+                  className="text-5xl font-bold mb-2 text-white" 
                   data-testid={`text-stat-value-${stat.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
                   {stat.value}

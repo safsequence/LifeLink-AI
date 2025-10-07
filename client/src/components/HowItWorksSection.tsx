@@ -7,24 +7,18 @@ export default function HowItWorksSection() {
       icon: MessageSquare,
       title: "Describe Your Symptoms",
       description: "Chat with our Gemini-powered AI doctor. Describe your symptoms in your own words, and get instant medical triage and guidance.",
-      color: "text-purple-400",
-      borderColor: "border-purple-500/30",
     },
     {
       number: "02",
       icon: AlertCircle,
       title: "Activate Emergency SOS",
       description: "If needed, trigger one-tap SOS alert. Your location and medical info are instantly shared with emergency services.",
-      color: "text-red-400",
-      borderColor: "border-red-500/30",
     },
     {
       number: "03",
       icon: MapPinned,
       title: "Get Routed to Help",
       description: "Our system routes your emergency to the nearest hospital or responder. Live map tracking ensures fast, coordinated response.",
-      color: "text-green-400",
-      borderColor: "border-green-500/30",
     },
   ];
 
@@ -44,16 +38,16 @@ export default function HowItWorksSection() {
           {steps.map((step, index) => (
             <div key={step.number} className="relative">
               {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-16 left-[60%] w-full h-0.5 bg-gradient-to-r from-gray-700 to-transparent" />
+                <div className="hidden md:block absolute top-16 left-[60%] w-full h-0.5 bg-gradient-to-r from-purple-500/30 to-transparent" />
               )}
-              <div className={`relative p-8 rounded-2xl bg-gradient-to-br from-gray-900 to-black border ${step.borderColor} hover:border-opacity-60 transition-all duration-300`}>
+              <div className="relative p-8 rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300">
                 <div className="mb-6">
-                  <span className={`text-5xl font-bold ${step.color} opacity-30`}>
+                  <span className="text-5xl font-bold text-purple-400 opacity-30">
                     {step.number}
                   </span>
                 </div>
-                <div className={`inline-flex p-4 rounded-xl bg-gradient-to-r from-gray-800 to-gray-900 border ${step.borderColor} mb-6`}>
-                  <step.icon className={`h-8 w-8 ${step.color}`} />
+                <div className="inline-flex p-4 rounded-xl bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 mb-6">
+                  <step.icon className="h-8 w-8 text-purple-400" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-white">
                   {step.title}
