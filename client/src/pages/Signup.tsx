@@ -1,48 +1,49 @@
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import AuthForm from "@/components/AuthForm";
-import type { User } from "@shared/schema";
 
 export default function Signup() {
   const [, setLocation] = useLocation();
   const { setUser } = useUser();
   const { toast } = useToast();
 
-  const signupMutation = useMutation({
-    mutationFn: async (data: { email: string; password: string; name?: string }) => {
-      const result = await apiRequest<{ user: User }>("/api/auth/signup", {
-        method: "POST",
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-          name: data.name || "User",
-        }),
-        headers: { "Content-Type": "application/json" },
-      });
-      return result;
-    },
-    onSuccess: (data) => {
-      setUser(data.user);
-      toast({
-        title: "Account created",
-        description: "Welcome to LifeLink AI!",
-      });
-      setLocation("/dashboard");
-    },
-    onError: (error: Error) => {
+  const handleSignup = (data: { email: string; password: string; name?: string }) => {
+    const usersData = localStorage.getItem('lifelink_users');
+    const users = usersData ? JSON.parse(usersData) : [];
+    
+    const existingUser = users.find((u: any) => u.email === data.email);
+    
+    if (existingUser) {
       toast({
         title: "Signup failed",
-        description: error.message || "Could not create account",
+        description: "An account with this email already exists",
         variant: "destructive",
       });
-    },
-  });
-
-  const handleSignup = (data: { email: string; password: string; name?: string }) => {
-    signupMutation.mutate(data);
+      return;
+    }
+    
+    const newUser = {
+      id: Date.now().toString(),
+      email: data.email,
+      password: data.password,
+      name: data.name || "User",
+      role: "user",
+      createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    localStorage.setItem('lifelink_users', JSON.stringify(users));
+    
+    const userWithoutPassword = { ...newUser, password: undefined };
+    setUser(userWithoutPassword);
+    localStorage.setItem('lifelink_current_user', JSON.stringify(userWithoutPassword));
+    
+    toast({
+      title: "Account created",
+      description: "Welcome to LifeLink AI!",
+    });
+    setLocation("/dashboard");
   };
 
   return <AuthForm mode="signup" onSubmit={handleSignup} />;

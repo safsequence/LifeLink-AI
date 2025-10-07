@@ -11,6 +11,7 @@ import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
 import SOS from "@/pages/SOS";
 import Admin from "@/pages/Admin";
+import Documentation from "@/pages/Documentation";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
+      <Route path="/documentation" component={Documentation} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/sos" component={SOS} />
       <Route path="/admin" component={Admin} />

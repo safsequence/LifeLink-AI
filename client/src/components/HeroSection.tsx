@@ -42,7 +42,7 @@ export default function HeroSection() {
                 Start Free Trial
               </Button>
             </Link>
-            <Link href="/login" data-testid="button-sign-in">
+            <Link href="/documentation" data-testid="button-documentation">
               <Button
                 size="lg"
                 variant="outline"
