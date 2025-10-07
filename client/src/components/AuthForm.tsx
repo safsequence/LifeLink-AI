@@ -39,7 +39,7 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
               </div>
             </Link>
 
-            <h1 className="text-3xl font-bold text-white mb-2"></h1>
+            <h1 className="text-3xl font-bold text-white mb-2">
               {mode === "login" ? "Welcome Back" : "Create Your Account"}
             </h1>
             <p className="text-gray-400">
