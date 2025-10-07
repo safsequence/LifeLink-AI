@@ -44,12 +44,12 @@ export default function StatsSection() {
           {stats.map((stat) => (
             <div 
               key={stat.label} 
-              className="relative group"
+              className="relative group flex"
               data-testid={`card-stat-${stat.label.toLowerCase().replace(/\s+/g, '-')}`}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative p-8 rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 hover:border-gray-700 transition-all duration-300">
-                <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 mb-4">
+              <div className="relative p-8 rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 hover:border-gray-700 transition-all duration-300 flex flex-col w-full">
+                <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 mb-4 self-start">
                   <stat.icon className="h-6 w-6 text-purple-400" />
                 </div>
                 <div 
