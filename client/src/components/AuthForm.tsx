@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Activity, Sparkles, Lock, Mail, User } from "lucide-react";
+import { Activity, Lock, Mail, User } from "lucide-react";
 
 interface AuthFormProps {
   mode: "login" | "signup";
@@ -39,12 +39,7 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
               </div>
             </Link>
 
-            <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-1.5 text-sm text-purple-300 backdrop-blur-sm mb-6">
-              <Sparkles className="h-4 w-4" />
-              <span>Powered by Google Gemini AI</span>
-            </div>
-
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-white mb-2"></h1>
               {mode === "login" ? "Welcome Back" : "Create Your Account"}
             </h1>
             <p className="text-gray-400">
