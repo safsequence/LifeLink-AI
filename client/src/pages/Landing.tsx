@@ -7,13 +7,17 @@ import StatsSection from "@/components/StatsSection";
 import IntegrationsSection from "@/components/IntegrationsSection";
 import SecuritySection from "@/components/SecuritySection";
 import CTASection from "@/components/CTASection";
+import AboutUsSection from "@/components/AboutUsSection";
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
-      <HeroSection />
+      <div id="home">
+        <HeroSection />
+      </div>
       <FeaturesSection />
+      <AboutUsSection />
       <HowItWorksSection />
       <StatsSection />
       <IntegrationsSection />

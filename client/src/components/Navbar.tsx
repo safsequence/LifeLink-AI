@@ -24,6 +24,19 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
             </div>
           </Link>
 
+          <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
+            {!user && location === "/" && (
+              <>
+                <a href="#home" className="px-4 py-2 text-gray-300 hover:text-white transition-colors" data-testid="link-nav-home">
+                  Home
+                </a>
+                <a href="#about" className="px-4 py-2 text-gray-300 hover:text-white transition-colors" data-testid="link-nav-about">
+                  About Us
+                </a>
+              </>
+            )}
+          </div>
+
           <div className="flex items-center gap-2">
             {user ? (
               <>

@@ -245,6 +245,7 @@
   html {
     @apply bg-black;
     overflow-x: hidden;
+    scroll-behavior: smooth;
   }
 
   /* Custom Scrollbar Styling */
