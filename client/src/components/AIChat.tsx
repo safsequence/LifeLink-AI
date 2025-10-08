@@ -60,7 +60,8 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
       };
       setMessages((prev) => [...prev, aiResponse]);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Triage API error:", error);
       const errorResponse: Message = {
         id: Date.now().toString(),
         role: "ai",
