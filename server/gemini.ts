@@ -70,7 +70,7 @@ Scoring guide:
 - 1-3: Minor (mild symptoms, general consultation)`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.5-flash",
       config: {
         systemInstruction: systemPrompt,
         responseMimeType: "application/json",
@@ -122,7 +122,7 @@ Scoring guide:
 export async function chatWithAI(message: string): Promise<string> {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.5-flash",
       contents: `As a medical AI assistant, provide helpful guidance for: ${message}\n\nNote: This is not a substitute for professional medical advice.`
     });
 
