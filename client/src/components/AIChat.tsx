@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useUser } from "@/contexts/UserContext";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,7 +32,8 @@ interface AIChatProps {
 export default function AIChat({ messages: initialMessages, onSendMessage }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages || []);
   const [input, setInput] = useState("");
-  const { user } = useUser();
+  const { user, logout } = useUser();
+  const [, setLocation] = useLocation();
   const isLoading = false; // Placeholder for actual loading state
   const messagesEndRef = null; // Placeholder for actual ref
 
@@ -60,12 +62,24 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
       };
       setMessages((prev) => [...prev, aiResponse]);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Triage API error:", error);
+      
+      const is401 = error?.message?.includes("401") || error?.status === 401;
+      
+      if (is401) {
+        logout();
+        setTimeout(() => {
+          setLocation("/login");
+        }, 500);
+      }
+      
       const errorResponse: Message = {
         id: Date.now().toString(),
         role: "ai",
-        content: "I apologize, but I'm having trouble analyzing your symptoms right now. If this is an emergency, please call your local emergency number immediately (999).",
+        content: is401 
+          ? "Your session has expired. Redirecting to login..."
+          : "I apologize, but I'm having trouble analyzing your symptoms right now. If this is an emergency, please call your local emergency number immediately (999).",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorResponse]);
