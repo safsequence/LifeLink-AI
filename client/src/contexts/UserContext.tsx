@@ -14,14 +14,36 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    const verifySession = async () => {
+      try {
+        const response = await fetch("/api/user", { credentials: "include" });
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else if (response.status === 401) {
+          setUser(null);
+          localStorage.removeItem("user");
+        }
+      } catch (error) {
+        console.error("Session verification failed:", error);
+      } finally {
+        setVerified(true);
+      }
+    };
+
+    verifySession();
+  }, []);
+
+  useEffect(() => {
+    if (user && verified) {
       localStorage.setItem("user", JSON.stringify(user));
-    } else {
+    } else if (!user && verified) {
       localStorage.removeItem("user");
     }
-  }, [user]);
+  }, [user, verified]);
 
   const logout = () => {
     setUser(null);
