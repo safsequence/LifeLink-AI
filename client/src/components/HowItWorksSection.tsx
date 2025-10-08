@@ -67,20 +67,14 @@ export default function HowItWorksSection() {
         </div>
 
         <div className="mt-20 max-w-5xl mx-auto">
-          <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold text-white mb-3">
-              See It In Action
-            </h3>
-            <p className="text-gray-400 text-lg">
-              Watch how LifeLink AI saves lives with intelligent emergency response
-            </p>
-          </div>
           <div className="relative rounded-2xl overflow-hidden border border-purple-500/30 bg-gradient-to-br from-gray-900 to-black p-2">
             <video
               className="w-full h-auto rounded-xl"
-              controls
+              autoPlay
+              loop
+              muted
+              playsInline
               data-testid="video-demo"
-              preload="metadata"
             >
               <source src={videoSrc} type="video/mp4" />
               Your browser does not support the video tag.
