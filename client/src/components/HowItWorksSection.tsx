@@ -1,4 +1,5 @@
 import { MessageSquare, AlertCircle, MapPinned } from "lucide-react";
+import videoSrc from "@assets/0-02-03-026d838d5a6eaa2e4817c6f9fb6813360beb6caaf024be7f6623883234b65a1e_1f807fda82b4a1a0_1759941642359.mp4";
 
 export default function HowItWorksSection() {
   const steps = [
@@ -63,6 +64,28 @@ export default function HowItWorksSection() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-20 max-w-5xl mx-auto">
+          <div className="text-center mb-8">
+            <h3 className="text-3xl font-bold text-white mb-3">
+              See It In Action
+            </h3>
+            <p className="text-gray-400 text-lg">
+              Watch how LifeLink AI saves lives with intelligent emergency response
+            </p>
+          </div>
+          <div className="relative rounded-2xl overflow-hidden border border-purple-500/30 bg-gradient-to-br from-gray-900 to-black p-2">
+            <video
+              className="w-full h-auto rounded-xl"
+              controls
+              data-testid="video-demo"
+              preload="metadata"
+            >
+              <source src={videoSrc} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </div>
       </div>
     </div>
