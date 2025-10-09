@@ -8,26 +8,40 @@ export default function Login() {
   const { setUser } = useUser();
   const { toast } = useToast();
 
-  const handleLogin = (data: { email: string; password: string }) => {
-    const usersData = localStorage.getItem('lifelink_users');
-    const users = usersData ? JSON.parse(usersData) : [];
-    
-    const user = users.find((u: any) => u.email === data.email && u.password === data.password);
-    
-    if (user) {
-      const userWithoutPassword = { ...user, password: undefined };
-      setUser(userWithoutPassword);
-      localStorage.setItem('lifelink_current_user', JSON.stringify(userWithoutPassword));
+  const handleLogin = async (data: { email: string; password: string }) => {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: "Login failed",
+          description: result.error || "Invalid credentials",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setUser(result.user);
       
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
       setLocation("/dashboard");
-    } else {
+    } catch (error) {
       toast({
         title: "Login failed",
-        description: "Invalid email or password",
+        description: "An error occurred during login",
         variant: "destructive",
       });
     }

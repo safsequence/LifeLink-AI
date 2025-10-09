@@ -49,8 +49,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({ user: userWithoutPassword });
       });
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Signup validation error:", error.errors);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: error.errors 
+        });
+      }
       console.error("Signup error:", error);
-      res.status(400).json({ error: "Invalid request" });
+      res.status(500).json({ error: "Signup failed" });
     }
   });
 
@@ -80,8 +87,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({ user: userWithoutPassword });
       });
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Login validation error:", error.errors);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: error.errors 
+        });
+      }
       console.error("Login error:", error);
-      res.status(400).json({ error: "Invalid request" });
+      res.status(500).json({ error: "Login failed" });
     }
   });
 
