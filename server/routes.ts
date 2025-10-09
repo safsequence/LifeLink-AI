@@ -40,8 +40,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = user.id;
       req.session.userRole = user.role;
 
-      const { password, ...userWithoutPassword } = user;
-      res.json({ user: userWithoutPassword });
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ error: "Session creation failed" });
+        }
+        const { password, ...userWithoutPassword } = user;
+        res.json({ user: userWithoutPassword });
+      });
     } catch (error) {
       console.error("Signup error:", error);
       res.status(400).json({ error: "Invalid request" });
@@ -65,8 +71,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = user.id;
       req.session.userRole = user.role;
 
-      const { password, ...userWithoutPassword } = user;
-      res.json({ user: userWithoutPassword });
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ error: "Session creation failed" });
+        }
+        const { password, ...userWithoutPassword } = user;
+        res.json({ user: userWithoutPassword });
+      });
     } catch (error) {
       console.error("Login error:", error);
       res.status(400).json({ error: "Invalid request" });
