@@ -76,7 +76,7 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
                 </Link>
 
                 <Button
-                  variant="ghost"
+                  variant="default"
                   size="sm"
                   onClick={onLogout}
                   className="gap-2"
