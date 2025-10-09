@@ -38,27 +38,19 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
   const messagesEndRef = null; // Placeholder for actual ref
 
   const triageMutation = useMutation({
-    mutationFn: async (symptoms: string) => {
-      return await apiRequest<TriageResponse>("/api/triage", {
+    mutationFn: async (message: string) => {
+      return await apiRequest<{ message: string }>("/api/chat", {
         method: "POST",
-        body: JSON.stringify({ symptoms }),
+        body: JSON.stringify({ message }),
         headers: { "Content-Type": "application/json" },
       });
     },
-    onSuccess: (data, symptoms) => {
-      const firstAidText = data.first_aid?.join("\n• ") || "No specific first aid recommended";
-      const flagsText = data.medical_flags?.length > 0
-        ? `\n\n⚠️ Medical Flags: ${data.medical_flags.join(", ")}`
-        : "";
-
+    onSuccess: (data) => {
       const aiResponse: Message = {
         id: Date.now().toString(),
         role: "ai",
-        content: `${data.summary_for_rescue_en}\n\nFirst Aid:\n• ${firstAidText}${flagsText}`,
+        content: data.message,
         timestamp: new Date(),
-        urgencyScore: data.urgency_score,
-        medicalFlags: data.medical_flags,
-        firstAid: data.first_aid,
       };
       setMessages((prev) => [...prev, aiResponse]);
     },
@@ -98,10 +90,10 @@ export default function AIChat({ messages: initialMessages, onSendMessage }: AIC
 
     setMessages([...messages, userMessage]);
     onSendMessage?.(input);
-    const symptoms = input;
+    const message = input;
     setInput("");
 
-    triageMutation.mutate(symptoms);
+    triageMutation.mutate(message);
   };
 
   const handleSubmit = (e: React.FormEvent) => {

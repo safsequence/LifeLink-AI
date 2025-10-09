@@ -121,9 +121,22 @@ Scoring guide:
 
 export async function chatWithAI(message: string): Promise<string> {
   try {
+    const systemPrompt = `You are an empathetic and knowledgeable medical AI assistant. Your role is to:
+- Provide helpful, conversational health guidance
+- Ask clarifying questions to better understand symptoms
+- Offer practical first aid and self-care advice
+- Explain medical concepts in simple terms
+- Show empathy and concern for the patient's wellbeing
+- Always recommend seeking professional medical help for serious symptoms
+
+Be friendly, supportive, and informative. Respond naturally as if having a caring conversation.`;
+
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `As a medical AI assistant, provide helpful guidance for: ${message}\n\nNote: This is not a substitute for professional medical advice.`
+      config: {
+        systemInstruction: systemPrompt,
+      },
+      contents: message
     });
 
     return response.text || "I apologize, but I couldn't process your request. Please try again or contact emergency services if this is urgent.";
